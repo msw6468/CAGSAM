@@ -985,5 +985,13 @@ sr 1 24 python train.py --test_save_pred --bg_data_path data/ARCADE --fg_data_pa
 sr 1 24 python train.py --test_save_pred --bg_data_path data/DCA1   --fg_data_path data/DCA1   --fg_num 2 --fg_overlap --fg_color --fg_color_sigma 0.5 --fg_min_size 0.50 --fg_max_size 1.00 --work_dir work_dir/DCA1_fgn-2_fgovl-T_fgc-T_sigma-0.5_fgs-0.50-1.00   &
 
 ### Analysis models (DCA1)
+# DCA1_fgn-2_fgovl-T_fgc-T_sigma-0.5_fgs-0.50-1.00
+# DCA1_fgn-1_fgovl-T_fgc-T_sigma-0.5_fgs-0.50-1.00
+# DCA1_fgn-2_fgovl-T_fgc-F_fgs-0.50-1.00
+# DCA1_fgn-2_fgovl-F_fgc-T_sigma-2.0_fgs-0.50-1.00
+# DCA1_fgn-2_fgovl-F_fgc-F_fgs-0.50-1.00
+# DCA1_fgn-1_fgovl-T_fgc-F_fgs-0.50-1.00
+# DCA1_fgn-1_fgovl-F_fgc-T_sigma-1.0_fgs-0.50-1.00
+# DCA1_fgn-1_fgovl-F_fgc-F_fgs-0.25-1.00
 
 ### Find best images (XCAD)
