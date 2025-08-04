@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch
 import argparse
 import os
-from utils import FocalDiceloss_IoULoss, generate_point, save_masks
+from utils import FocalDiceloss_IoULoss, generate_point, save_masks, save_overlapped_mask
 from torch.utils.data import DataLoader
 from DataLoader import TestingDataset
 from metrics import SegMetrics
@@ -21,13 +21,13 @@ import json
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--work_dir", type=str, default="workdir", help="work dir")
+    parser.add_argument("--work_dir", type=str, default="work_dir/pretrained", help="work dir")
     parser.add_argument("--run_name", type=str, default="sammed", help="run model name")
     parser.add_argument("--batch_size", type=int, default=1, help="batch size")
     parser.add_argument("--image_size", type=int, default=256, help="image_size")
     parser.add_argument('--device', type=str, default='cuda')
-    parser.add_argument("--data_path", type=str, default="data_demo", help="train data path") 
-    parser.add_argument("--metrics", nargs='+', default=['iou', 'dice', 'dice_main_only', 'dice_fine_only', 'dice_normalized'], help="metrics")
+    parser.add_argument("--data_path", type=str, default="data/FineARCADE", help="test data path") 
+    parser.add_argument("--metrics", nargs='+', default=['dice', 'dice_main_only', 'dice_fine_only'], help="metrics")
     parser.add_argument("--model_type", type=str, default="vit_b", help="sam model_type")
     parser.add_argument("--sam_checkpoint", type=str, default="pretrain_model/sam-med2d_b.pth", help="sam checkpoint")
     parser.add_argument("--boxes_prompt", type=bool, default=False, help="use boxes prompt")
@@ -36,7 +36,7 @@ def parse_args():
     parser.add_argument("--multimask", type=bool, default=True, help="ouput multimask")
     parser.add_argument("--encoder_adapter", type=bool, default=True, help="use adapter")
     parser.add_argument("--prompt_path", type=str, default=None, help="fix prompt path")
-    parser.add_argument("--save_pred", type=bool, default=False, help="save reslut")
+    parser.add_argument("--test_save_pred", action='store_true', help="save result")
     args = parser.parse_args()
     if args.iter_point > 1:
         args.point_num = 1
@@ -141,6 +141,7 @@ def main(args):
     test_metrics = {}
     prompt_dict = {}
 
+    epoch = 0
     for i, batched_input in enumerate(test_pbar):
         batched_input = to_device(batched_input, args.device)
         ori_labels = batched_input["ori_label"]
@@ -183,8 +184,6 @@ def main(args):
             points_show = (torch.concat(point_coords, dim=1), torch.concat(point_labels, dim=1))
 
         masks, pad = postprocess_masks(low_res_masks, args.image_size, original_size)
-        if args.save_pred:
-            save_masks(masks, save_path, img_name, args.image_size, original_size, pad, batched_input.get("boxes", None), points_show)
 
         loss = criterion(masks, ori_labels, iou_predictions)
         test_loss.append(loss.item())
@@ -194,9 +193,34 @@ def main(args):
 
         for j in range(len(args.metrics)):
             test_iter_metrics[j] += test_batch_metrics[j]
+
+        if (args.test_save_pred):
+            np_masks = torch.sigmoid(masks).squeeze().cpu().numpy()
+            np_masks[np_masks > 0.5] = int(1)
+            np_masks[np_masks <= 0.5] = int(0)
+            gt      = batched_input['ori_label'].squeeze().cpu().numpy()
+            main_gt = batched_input['ori_ignore_mask'].squeeze().cpu().numpy()
+            save_path = os.path.join(f"{args.work_dir}", "pred_results", f"{img_name.split('.')[-2]}_epc{epoch:02d}")
+            for m in range(len(test_batch_metrics)):
+                save_path = f'{save_path}_{test_batch_metrics[m]:.4f}'
+            save_path = f'{save_path}.pdf'
+
+            save_overlapped_mask(
+                image         = batched_input['ori_image'].cpu().numpy()[0],
+                mask          = np_masks,
+                save_path     = save_path,
+                image_name    = img_name,
+                gt            = gt,
+                main_gt       = main_gt,
+                image_size    = args.image_size,
+                original_size = original_size,
+                points        = points_show,
+                )
+            # save_masks(masks, save_path, img_name, args.image_size, original_size, pad, batched_input.get("boxes", None), points_show, visual_prompt=True)
   
     test_iter_metrics = [metric / l for metric in test_iter_metrics]
     test_metrics = {args.metrics[i]: '{:.4f}'.format(test_iter_metrics[i]) for i in range(len(test_iter_metrics))}
+
 
     average_loss = np.mean(test_loss)
     if args.prompt_path is None:

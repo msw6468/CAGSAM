@@ -39,6 +39,10 @@ gdown 1ARiB5RkSsWmAB_8mqWnwDF8ZKTtFwsjl -O pretrain_model/sam-med2d_b.pt
 
 # Trian and Evaluation
 ```
+# evaluation pretrained model
+python test.py
+
+
 # finetuning only
 python train.py --not_augments --data_path data/ARCADE --work_dir work_dir/ft_ARCADE
 
@@ -56,9 +60,10 @@ python train.py --bg_data_path data/ARCADE --fg_data_path data/ARCADE --fg_num 2
 - `--fg_max_size`: maximum size for foreground
 
 # FineARCADE samples
-<span style="color:blue">Blue mask</span> : original label from ARCADE
+ 
+$\color{blue}{\text{Blue mask}}$: original label from ARCADE
 
-<span style="color:red">Red mask</span> : ***additional label*** from FineARCADE
+$\color{red}{\text{Red mask}}$: ***additional label*** from FineARCADE
 
 
 <img src="assets/sample1.png" width="400px" height="200px" title="sample1"/>
