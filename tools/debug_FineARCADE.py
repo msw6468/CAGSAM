@@ -45,11 +45,14 @@ def main(args):
         main_mask = cv2.imread(main_mask_path,0) * 255
         fine_mask = cv2.imread(fine_mask_path,0) * 255
         save_path = f'debug/{image_path.split("/")[-3]}_{image_path.split("/")[-1]}'
+        full_mask_image = overlay_mask_on_image(image=image, mask=mask,      color=(0,255,0))
+        main_mask_image = overlay_mask_on_image(image=image, mask=main_mask, color=(255,0,0))
+        fine_mask_image = overlay_mask_on_image(image=image, mask=fine_mask, color=(0,0,255))
+        main_fine_mask_image = overlay_mask_on_image(image=main_mask_image, mask=fine_mask, color=(0,0,255))
         concat_img = np.concatenate([image, 
-                                     overlay_mask_on_image(image=image, mask=mask,      color=(255,0,0)), 
-                                     overlay_mask_on_image(image=image, mask=main_mask, color=(0,255,0)), 
-                                     overlay_mask_on_image(image=image, mask=fine_mask, color=(0,0,255))], 
+                                     main_fine_mask_image], 
                                      axis=1)
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
         cv2.imwrite(f"{save_path}", np.uint8(concat_img))
 
 

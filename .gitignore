@@ -7,6 +7,7 @@ data/DCA1
 work_dir
 pretrain_model
 data.zip
+debug
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
