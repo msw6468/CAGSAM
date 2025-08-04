@@ -34,6 +34,7 @@ unzip data.zip
 # Prepare pretrain models for SAM-Med2D
 reference: https://github.com/OpenGVLab/SAM-Med2D
 ```
+mkdir pretrain_model
 gdown 1ARiB5RkSsWmAB_8mqWnwDF8ZKTtFwsjl -O pretrain_model/sam-med2d_b.pt
 ```
 
