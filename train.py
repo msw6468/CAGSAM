@@ -369,7 +369,7 @@ def main(args):
                 cv2.imwrite(f"aug_images/{exp_name}/{i}_image_mask.png", (concat_image).astype(np.uint8))
                 print(f"Image {i} saved.")
         
-        train_dataset.debug = False
+            train_dataset.debug = False
 
     else:
         train_dataset = TrainingDataset(args.data_path, image_size=args.image_size, mode='train', point_num=1, mask_num=args.mask_num, requires_name = False)
