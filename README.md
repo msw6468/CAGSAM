@@ -1,15 +1,15 @@
-# ENV INSTALLATION
+# Installation environment
 reference: https://github.com/OpenGVLab/SAM-Med2D.git
 
 ```
-conda create --name SAM4CAG python=3.10 
-conda activate SAM4CAG
+conda create --name CAGSAM python=3.10 
+conda activate CAGSAM
 pip install torch==2.6.0 torchvision==0.21.0 torchaudio==2.6.0
 pip install -r requirements.txt
 ```
 
-# DOWNLOAD DATASET
-## ARCADE from online
+# Prepare datasets
+## Prepare ARCADE from original provider
 ```
 wget 'https://zenodo.org/records/10390295/files/arcade.zip?download=1' -O ./data/ARCADE.zip
 cd data
@@ -18,26 +18,26 @@ mv arcade ARCADE
 cd ..
 ```
 
-## Preprocessing ARCADE/FineARCADE dataset
+## Preprocess ARCADE/FineARCADE dataset
 ```
 python tools/ARCADE_mask_generation.py
-python tools/data_prepare.py:
+python tools/data_prepare.py
 ```
 
-## [Easier] All datasets from Google Drive (XCAD, DCA1, ARCADE, FineARCADE)
+## [recommended] Prepare All datasets from Google Drive (XCAD, DCA1, ARCADE, FineARCADE)
 ```
 rm -rf data
-gdown XXX -O data.zip
+gdown 1BJhvi6FzVbbalZR5Fzzfk_2un7NPwkqm -O data.zip
 unzip data.zip
 ```
 
-# DOWNLOAD PRETRAINED MODEL
+# Prepare pretrain models for SAM-Med2D
 reference: https://github.com/OpenGVLab/SAM-Med2D
 ```
 gdown 1ARiB5RkSsWmAB_8mqWnwDF8ZKTtFwsjl -O pretrain_model/sam-med2d_b.pt
 ```
 
-# TRAIN AND EVALUATION
+# Trian and Evaluation
 ```
 # finetuning only
 python train.py --not_augments --data_path data/ARCADE --work_dir work_dir/ft_ARCADE
@@ -58,7 +58,7 @@ python train.py --bg_data_path data/ARCADE --fg_data_path data/ARCADE --fg_num 2
 # FineARCADE samples
 <span style="color:blue">Blue mask</span> : original label from ARCADE
 
-<span style="color:red">Red mask</span> : additional label from FineARCADE
+<span style="color:red">Red mask</span> : ***additional label*** from FineARCADE
 
 
 <img src="assets/sample1.png" width="400px" height="200px" title="sample1"/>
