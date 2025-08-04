@@ -1,7 +1,9 @@
 # Archived data, data, work_dir, pretrain model
 archive*
 aug_images
-data
+data/ARCADE
+data/XCAD
+data/DCA1
 work_dir
 pretrain_model
 data.zip
