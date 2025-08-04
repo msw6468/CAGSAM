@@ -356,20 +356,18 @@ def main(args):
                                         debug= args.debug)
         train_loader  = DataLoader(train_dataset, batch_size = args.batch_size, shuffle=True, num_workers=4)
 
-        print('*******Save sample images for augmentation')
-        train_dataset.debug = True
-        exp_name = args.work_dir.split('/')[-1]
-        os.makedirs(f"aug_images/{exp_name}", exist_ok=True)
-
-        for i in range(10):
-            image, mask = train_dataset[i]
-            mask = np.stack([mask]*3, axis=-1)  # Convert mask to 3 channels
-            concat_image = np.concatenate([image, mask*255], axis=1)
-            cv2.imwrite(f"aug_images/{exp_name}/{i}_image_mask.png", (concat_image).astype(np.uint8))
-            print(f"Image {i} saved.")
-        
         if args.debug:
-            sys.exit(0)
+            print('*******Save sample images for augmentation')
+            train_dataset.debug = True
+            exp_name = args.work_dir.split('/')[-1]
+            os.makedirs(f"aug_images/{exp_name}", exist_ok=True)
+
+            for i in range(10):
+                image, mask = train_dataset[i]
+                mask = np.stack([mask]*3, axis=-1)  # Convert mask to 3 channels
+                concat_image = np.concatenate([image, mask*255], axis=1)
+                cv2.imwrite(f"aug_images/{exp_name}/{i}_image_mask.png", (concat_image).astype(np.uint8))
+                print(f"Image {i} saved.")
         
         train_dataset.debug = False
 
